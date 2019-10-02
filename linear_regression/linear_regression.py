@@ -1,151 +1,100 @@
 import numpy as np
 import sklearn.datasets as skdata
-from sklearn.linear_model import Perceptron
+from sklearn.linear_model import LinearRegression
 
+boston_housing_data = skdata.load_boston()
+x = boston_housing_data.data
+y = boston_housing_data.target
 
-"""
-Name: Huerta, Emilia
+print(x.shape) #506, 13
+print(y.shape) #506,
 
-Collaborators: Doe, Jane (Please write names in <Last Name, First Name> format)
+#Split the data 90 percent for training, 10 percent for testing
+split_idx = int(0.90*x.shape[0])
+x_train,y_train = x[:split_idx, :], y[:split_idx]
+x_test, y_test = x[split_idx:, :], y[split_idx:]
 
-Collaboration details: Discussed <function name> implementation details with Jane Doe.
+#Sets up our Linear Regression Model
+model = LinearRegression()
 
-Summary:
-Report your scores here. For example,
+#Trains our regression model
+model.fit(x_train, y_train)
 
-Results using scikit-learn Perceptron model
-Training set mean accuracy: 0.9199
-Testing set mean accuracy: 0.9298
-Results using our Perceptron model
-Training set mean accuracy: 0.0000
-Testing set mean accuracy: 0.0000
-"""
+#Make predictions
+predictions = model.predict(x_test)
 
-"""
-Implementation of our Perceptron model for binary classification
-"""
-class PerceptronBinary(object):
-  def __init__(self):
-    # Define private variables
-    self.__weights = None
+print("predictions are", predictions)
 
-  def __update(self, x, y):
-    #updates w using w <-- w + XnYn
-    #predictions
-    predictions = self.predict(x) #Nx1
-    for n in range (predictions.shape[0]):
-      if(predictions[n] != y[n]):
-        self.wights = self.__weights + x[n,:] * y[n]
-        '''
-        x = d x N
-        y = 1 x N
-        w = d x1
-        wTx
-        1xd dxN
-        1xN
-        '''
-    """
-    Update the weight vector during each training iteration
+#meaduring regression error
+def mean_squared_error(y_hat, y):
+    #y_hat is your predictions
+    return np.mean((y_hat-y)**2)
 
-    x : N x d feature vector
-    y : N x 1 ground-truth label
-    """
+mse = mean_squared_error(predictions, y_test)
 
-  def fit(self, x, y):
-    #wights in the fit fucntion // need to initialize weight
-    self.weights = np.zeros(x.shape[0]+1)
-    self.weights[0] = -1
-    threshold = np.full(0.5, x.shape[0])  #append 0.5 to every x //506
-    x = np.concatenate(threshold, x, axis=1) #plus 1 because of d +1
-    y = np.where(y == 0, -1, 1) #where y is = to 0, make it -1
-    '''
-    x = d + 1 x N
-    y = 1 x N
-    w = d + 1 x 1
-    '''
-    for t in range(1000):
-      predictions = self.predict(x)
-      loss = np.mean(np.where(predictions != y, 1.0, 0.0)) #implement on your own
-      self.__update(x,y)
+print("mse is", mse) #should be around 10.8~
 
+#LINEAR REGRESSION VIA NORMAL EQUATION
+class LinearRegressionNormalEqn(object):
 
-    """
-    Fits the model to x and y by updating the weight vector
-    based on mis-classified examples for t iterations until convergence
+    def __init__(self):
+        self.weights = None
 
-    x : N x d feature vector
-    y : N x 1 ground-truth label
-    """
+    def  fit(self, x, y):
+        x_transpose_x_inv = np.linalg.inv(np.matmul(x.T, x)) # x.T == np.transpose(x)
+        self.weights = np.matmul(np.matmul(x_transpose_x_inv, x.T), y)
+        #xTx = np.matmul(np.transpose(x), x)
+        #xTx_inv = np.inv(xTx)
+        #self.weights = np.matmul(np.matmul(xTx_inv, np.transpose(x), y))
 
+    def predict(self, x):
+        return np.matmul(x, self.weights)
 
-  def predict(self, x):
-    #compute h(x) = sign(wTx)
-    #self.wights <-- w
-    score = np.dot(np.transpose(self.__weights, x))
-    #score: wTx
-    return np.sign(score)  #0 to -1
-    """
-    Predicts the label for each feature vector x
+#Sets up our Linear Regression model
+model_norm_eqn = LinearRegressionNormalEqn()
 
-    x : N x d feature vector
+#Trains our regression model
+model_norm_eqn.fit(x_train, y_train)
 
-    returns : N x 1 label vector
-    """
+#Make predictions
+predictions_norm_eqn = model_norm_eqn.predict(x_test)
 
-    #return np.zeros(x.shape[0])
+#Evaluate our model
+mse_norm_eqn = mean_squared_error(predictions_norm_eqn, y_test) #Should be around 13
 
-  def score(self, x, y):
-    #score wTx
-    #sign(wTx)
-    return np.sign(np.dot(np.transpose(self.wights), x))
-    """
-    Predicts labels based on feature vector x and computes the mean accuracy
-    of the predictions
+print("mse norm eqn is ", mse_norm_eqn)
 
-    x : N x d feature vector
-    y : N x 1 ground-truth label
+class LinearRegressionSVD(object):
 
-    returns : double
-    """
+    def __init__(self):
+        self.weights = None
 
-    #return 0.0
+    def fit(self, x, y):
+        U, S, V_t = np.linalg.svd(x)
+        padding = np.zeros([x.shape[0] -S.shape[0], S.shape[0]])
+        S_pseudo = np.concatenate([np.diag(1.0/S), padding], axis =0).T
+        X_pseudo = np.matmul(np.matmul(V_t.T, S_pseudo), U.T)
+        self.weights = np.matmul(X_pseudo, y)
 
+    def predict(self, x):
+        return np.matmul(x, self.weights)
 
-if __name__ == '__main__':
+#Split the data 90 percent for training, 10 percent for testing
+split_idx = int(0.90*x.shape[0])
+x_train, y_train = x[:split_idx, :], y[:split_idx]
+x_test, y_test = x[split_idx:, :], y[split_idx:]
+#if N < d, issues, too huge... use pseudo inverse//less dangerous
 
-  breast_cancer_data = skdata.load_breast_cancer()
-  x = breast_cancer_data.data
-  y = breast_cancer_data.target
+#Sets up our Linear Regression model
+model_svd = LinearRegressionSVD()
 
-  # 90 percent train, 10 percent test split
-  split_idx = int(0.90*x.shape[0])
-  x_train, x_test = x[:split_idx], x[split_idx:]
-  y_train, y_test = y[:split_idx], y[split_idx:]
+#Trains our regression model
+model_svd.fit(x_train, y_train)
 
-  '''
-    Trains and tests Perceptron model from scikit-learn
-  '''
-  model = Perceptron(penalty=None, alpha=0.0, tol=1e-3)
-  # Trains scikit-learn Perceptron model
-  model.fit(x_train, y_train)
-  print('Results using scikit-learn Perceptron model')
-  # Test model on training set
-  scores_train = model.score(x_train, y_train)
-  print('Training set mean accuracy: {:.4f}'.format(scores_train))
-  # Test model on testing set
-  scores_test = model.score(x_test, y_test)
-  print('Testing set mean accuracy: {:.4f}'.format(scores_test))
+#Make predictions
+predictions_svd = model_svd.predict(x_test)
 
-  '''
-    Trains and tests our Perceptron model for binary classification
-  '''
-  model = PerceptronBinary()
-  # Trains scikit-learn Perceptron model
-  model.fit(x_train, y_train)
-  print('Results using our Perceptron model')
-  # Test model on training set
-  scores_train = model.score(x_train, y_train)
-  print('Training set mean accuracy: {:.4f}'.format(scores_train))
-  # Test model on testing set
-  scores_test = model.score(x_test, y_test)
-  print('Testing set mean accuracy: {:.4f}'.format(scores_test))
+#Evaluate our model
+mse_svd = mean_squared_error(predictions_svd, y_test)
+
+print("mse svd", mse_svd)
