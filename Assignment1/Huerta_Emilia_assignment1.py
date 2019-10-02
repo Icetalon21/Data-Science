@@ -30,6 +30,20 @@ class PerceptronBinary(object):
     self.__weights = None
 
   def __update(self, x, y):
+    #updates w using w <-- w + XnYn
+    #predictions
+    predictions = self.predict(x) #Nx1
+    for n in range (predictions.shape[0]):
+      if(predictions[n] != y[n]):
+        self.wights = self.__weights + x[n,:] * y[n]
+        '''
+        x = d x N
+        y = 1 x N
+        w = d x1
+        wTx
+        1xd dxN
+        1xN
+        '''
     """
     Update the weight vector during each training iteration
 
@@ -37,8 +51,24 @@ class PerceptronBinary(object):
     y : N x 1 ground-truth label
     """
 
-
   def fit(self, x, y):
+    #wights in the fit fucntion // need to initialize weight
+    self.weights = np.zeros(x.shape[0]+1)
+    self.weights[0] = -1
+    threshold = np.full(0.5, x.shape[0])  #append 0.5 to every x //506
+    x = np.concatenate(threshold, x, axis=1) #plus 1 because of d +1
+    y = np.where(y == 0, -1, 1) #where y is = to 0, make it -1
+    '''
+    x = d + 1 x N
+    y = 1 x N
+    w = d + 1 x 1
+    '''
+    for t in range(1000):
+      predictions = self.predict(x)
+      loss = np.mean(np.where(predictions != y, 1.0, 0.0)) #implement on your own
+      self.__update(x,y)
+
+
     """
     Fits the model to x and y by updating the weight vector
     based on mis-classified examples for t iterations until convergence
@@ -49,6 +79,11 @@ class PerceptronBinary(object):
 
 
   def predict(self, x):
+    #compute h(x) = sign(wTx)
+    #self.wights <-- w
+    score = np.dot(np.transpose(self.__weights, x))
+    #score: wTx
+    return np.sign(score)  #0 to -1
     """
     Predicts the label for each feature vector x
 
@@ -57,9 +92,12 @@ class PerceptronBinary(object):
     returns : N x 1 label vector
     """
 
-    return np.zeros(x.shape[0])
+    #return np.zeros(x.shape[0])
 
   def score(self, x, y):
+    #score wTx
+    #sign(wTx)
+    return np.sign(np.dot(np.transpose(self.wights), x))
     """
     Predicts labels based on feature vector x and computes the mean accuracy
     of the predictions
@@ -70,7 +108,7 @@ class PerceptronBinary(object):
     returns : double
     """
 
-    return 0.0
+    #return 0.0
 
 
 if __name__ == '__main__':
