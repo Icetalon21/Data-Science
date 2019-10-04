@@ -4,6 +4,9 @@ import numpy as np
 import sklearn.datasets as skdata
 from sklearn.linear_model import Perceptron
 
+import logging
+log = logging.getLogger(__name__)
+
 
 """
 Name: Doe, John (Please write names in <Last Name, First Name> format)
@@ -52,6 +55,7 @@ class PerceptronBinary(object):
         """
         print("FIT ...")
 
+        print("x.shape:", x.shape)
         print("x.shape[0]:", x.shape[0])
         print("x.shape[1]:", x.shape[1])
         w = self.__weights
@@ -75,12 +79,15 @@ class PerceptronBinary(object):
         print("w.T.shape:", w.T.shape)  # (31, 1)
 
         # Add some padding
+        print("FIT > ADD PADDING ...")
+        print("x.shape[0]:", x.shape[0])  #
         threshold = np.full(x.shape[0], 0.5)
         print("threshold.shape:", threshold.shape)  # (512,)
         print("x.shape:", x.shape)  # (512,30)
         print("x:", x)
 
-        print("COLUMN STACK: append threshold to x")
+        # https://docs.scipy.org/doc/numpy/reference/generated/numpy.column_stack.html
+        print("FIT > COLUMN STACK: append threshold to x")
         # x = np.concatenate((threshold, x.T), axis=1) # numpy.AxisError: axis 1 is out of bounds for array of dimension 1
         x = np.column_stack((threshold, x))
         print("x.shape:", x.shape)  # (512, 31)
@@ -88,7 +95,9 @@ class PerceptronBinary(object):
         y = np.where(y == 0, -1, 1)
         print("y.shape:", y.shape)  # (512, )
 
+        print("FIT > BEGIN LOOP:")
         for t in range(2):
+            print("FIT > LOOP ITERATION:", t)
             # Predict
             predictions = self.predict(x)
 
@@ -114,11 +123,11 @@ class PerceptronBinary(object):
         print("row.shape:", row.shape)  # (31,)
 
         w = self.__weights
-        print("weights.shape:", w.shape)  # (513,)
+        print("w.shape:", w.shape)  # (1, 31)
 
         trans = np.transpose(w)
         print("trans.shape:", trans.shape)  # (513,)
-        print("w.shape:", w.shape)  # (513,)
+        print("w.shape:", w.shape)  # (1, 31)
 
         print("MATMUL ...")
         print("x.shape:", x.shape)      # (513, 31)
@@ -137,47 +146,71 @@ class PerceptronBinary(object):
         returns : double
         """
 
+        # Add some padding
+        print("SCORE > ADD PADDING ...")
+        print("x.shape[0]:", x.shape[0])  #
+        threshold = np.full(x.shape[0], 0.5)
+        print("threshold.shape:", threshold.shape)  # (512,)
+        print("x.shape:", x.shape)  # (512,30)
+        print("x:", x)
+
+        # https://docs.scipy.org/doc/numpy/reference/generated/numpy.column_stack.html
+        print("SCORE > COLUMN STACK: append threshold to x")
+        # x = np.concatenate((threshold, x.T), axis=1) # numpy.AxisError: axis 1 is out of bounds for array of dimension 1
+        x = np.column_stack((threshold, x))
+        print("x.shape:", x.shape)  # (512, 31)
+
+        # x at this point is not the right shape, therefore we copy/pasted the above code
+        # ValueError: matmul: Input operand 1 has a mismatch in its core dimension 0, ...
+        # ... with gufunc signature (n?,k),(k,m?)->(n?,m?) (size 31 is different from 30)
+
         # Slide 31
         predictions = model.predict(x)
-        return np.where(predictions == y, 1, 0)
+        print("predictions.shape:", predictions.shape)
+        # print("predictions:", predictions)
+        scores = np.where(predictions == y, 1, 0)
+        mean = np.mean(scores)
+        return mean
 
 
 if __name__ == '__main__':
 
     # RANDOM TESTS TO LEARN NP STUFF
-    #
-    # a = np.array([[1, 2], [3, 4]])
-    # b = np.array([[5, 6]])
-    #
-    # print("a.shape:", a.shape)
-    # print("b.shape:", b.shape)
-    # print("b.T.shape:", b.T.shape)
-    #
-    # c = np.concatenate((a, b), axis=0)
-    # print(c)
-    #
-    # c = np.concatenate((a, b.T), axis=1)
-    # print(c)
-    #
-    # d = np.array([[5, 6], [7, 8]])
-    # print("d:", d)
-    # print("d.shape:", d.shape)
-    # dot = np.dot(a, d)
-    # print("dot:", dot)
-    #
-    # # d = np.array([[5, 6], [7, 8], [9, 10]])
-    # # print("d:", d)
-    # # print("d.shape:", d.shape)
-    # # dot = np.dot(a, d)
-    # # print("dot:", dot)
-    #
-    # d = np.array([[5, 6, 9], [7, 8, 10]])
+
+    a = np.array([[1, 2], [3, 4]])
+    b = np.array([[5, 6]])
+
+    print("a.shape:", a.shape)
+    print("b.shape:", b.shape)
+    print("b.T.shape:", b.T.shape)
+
+    # https://docs.scipy.org/doc/numpy/reference/generated/numpy.concatenate.html
+    c = np.concatenate((a, b), axis=0)
+    print(c)
+
+    c = np.concatenate((a, b.T), axis=1)
+    print(c)
+
+    d = np.array([[5, 6], [7, 8]])
+    print("d:", d)
+    print("d.shape:", d.shape)
+    dot = np.dot(a, d)
+    print("dot:", dot)
+
+    # d = np.array([[5, 6], [7, 8], [9, 10]])
     # print("d:", d)
     # print("d.shape:", d.shape)
     # dot = np.dot(a, d)
     # print("dot:", dot)
 
+    d = np.array([[5, 6, 9], [7, 8, 10]])
+    print("d:", d)
+    print("d.shape:", d.shape)
+    dot = np.dot(a, d)
+    print("dot:", dot)
+
     # MAIN PROGRAM STARTS HERE
+    log.info("*** MAIN PROGRAM STARTS HERE ***")
 
     breast_cancer_data = skdata.load_breast_cancer()
     x = breast_cancer_data.data    # data to learn
@@ -224,13 +257,19 @@ if __name__ == '__main__':
     model = PerceptronBinary()
 
     # Trains scikit-learn Perceptron model
+    print("MAIN > FIT > START ...")
     model.fit(x_train, y_train)
+    print("MAIN > FIT > DONE")
     print('Results using our Perceptron model')
 
     # Test model on training set
+    print("MAIN > FIT > SCORE TRAIN START ...")
     scores_train = model.score(x_train, y_train)
+    print("MAIN > FIT > SCORE TRAIN END")
     print('Training set mean accuracy: {:.4f}'.format(scores_train))
 
     # Test model on testing set
+    print("MAIN > FIT > SCORE TEST START ...")
     scores_test = model.score(x_test, y_test)
+    print("MAIN > FIT > SCORE TEST END")
     print('Testing set mean accuracy: {:.4f}'.format(scores_test))
