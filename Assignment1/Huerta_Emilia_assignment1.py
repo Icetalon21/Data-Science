@@ -6,7 +6,7 @@ from sklearn.linear_model import Perceptron
 """
 Name: Huerta, Emilia
 
-Collaborators: Doe, Jane (Please write names in <Last Name, First Name> format)
+Collaborators: Kitamura, Masao & Gambetta, Grant (Please write names in <Last Name, First Name> format)
 
 Collaboration details: Discussed <function name> implementation details with Jane Doe.
 
@@ -56,8 +56,13 @@ class PerceptronBinary(object):
     self.weights = np.zeros(x.shape[0]+1)
     self.weights[0] = -1
     threshold = np.full(0.5, x.shape[0])  #append 0.5 to every x //506
-    x = np.concatenate(threshold, x, axis=1) #plus 1 because of d +1
+    #x = np.concatenate(threshold, x, axis=1) #plus 1 because of d +1   -- does not work
+    #threshold = np.expand_dims(threshold, axis=-1)
+    #to turn threshold into a (512, 1) and you can concatenate onto x, but in short either way works.
+    x = np.column_stack((threshold, x))
+    print("x.shape:", x.shape)  # (512, 31)
     y = np.where(y == 0, -1, 1) #where y is = to 0, make it -1
+    print("y.shape", y.shape) # (512, )
     '''
     x = d + 1 x N
     y = 1 x N
@@ -81,9 +86,14 @@ class PerceptronBinary(object):
   def predict(self, x):
     #compute h(x) = sign(wTx)
     #self.wights <-- w
-    score = np.dot(np.transpose(self.__weights, x))
+    w = self.__weights
+    trans = np.transpose(w)
+    predictions = np.matmul(x, w.T)   #recently added
+    print("predictions.shape:", predictions.shape)  #recently added
+    return predictions
+    #score = np.dot(np.transpose(self.__weights, x))  recently commented out
     #score: wTx
-    return np.sign(score)  #0 to -1
+    #return np.sign(score)  #0 to -1  recently commented out
     """
     Predicts the label for each feature vector x
 
@@ -97,6 +107,7 @@ class PerceptronBinary(object):
   def score(self, x, y):
     #score wTx
     #sign(wTx)
+    #realized that threshold also needs to be here? 10/4/2019
     return np.sign(np.dot(np.transpose(self.wights), x))
     """
     Predicts labels based on feature vector x and computes the mean accuracy
@@ -149,3 +160,4 @@ if __name__ == '__main__':
   # Test model on testing set
   scores_test = model.score(x_test, y_test)
   print('Testing set mean accuracy: {:.4f}'.format(scores_test))
+
