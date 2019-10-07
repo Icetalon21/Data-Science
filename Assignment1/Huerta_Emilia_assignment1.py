@@ -6,9 +6,11 @@ from sklearn.linear_model import Perceptron
 Name: Huerta, Emilia
 ​
 Collaborators:
-    Kitamura, Masao Gambetta, Grant
+    Gambetta, Grant
+    Kitamura, Masao
+    Martin, Imani
 ​
-Collaboration details: Discussed <function name> implementation details with Jane Doe.
+Collaboration details: Discussed __update(), fit(), predict(), & score() together
 ​
 Summary:
 Report your scores here. For example,
