@@ -172,8 +172,13 @@ class LinearRegressionGradientDescent(object):
 
     returns : double
     """
+    y_pred = self.predict(x)
 
-    return 0.0
+    scores = np.where(y == y_pred, 1, 0)
+    mean_accuracy = np.mean(scores)
+    return mean_accuracy
+
+    #return 0.0
 
 def mean_squared_error(y_hat, y):
   """
