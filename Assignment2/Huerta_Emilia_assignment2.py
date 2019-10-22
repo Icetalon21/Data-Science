@@ -5,7 +5,7 @@ from sklearn.linear_model import LinearRegression
 
 
 """
-Name: Doe, John (Please write names in <Last Name, First Name> format)
+Name: Huerta, Emilia (Please write names in <Last Name, First Name> format)
 
 Collaborators: Doe, Jane (Please write names in <Last Name, First Name> format)
 
@@ -48,10 +48,11 @@ class GradientDescentOptimizer(object):
   def __init__(self):
     pass
 
-  def __compute_gradients(self, x, y, loss_func):
+  def __compute_gradients(self, w, x, y, loss_func):
     """
     Returns the gradient of the logistic, mean squared or half mean squared loss
 
+    w : 1 x d weight vector
     x : N x d feature vector
     y : N x 1 ground-truth label
     loss_func : loss type either 'logistic','mean_squared', or 'half_mean_squared'
@@ -87,12 +88,24 @@ Implementation of our Logistic Regression model for binary classification
 trained using Gradient Descent
 """
 class LogisticRegressionGradientDescent(object):
-  def __init__(self):
+  def __init__(self, t=100, learning_rate=0.1, epsilon=1e-4):
+    """
+    t : number of iterations to train
+    alpha : learning rate
+    epsilon : threshold for stopping condition
+    """
     # Define private variables
     self.__weights = None
     self.__optimizer = GradientDescentOptimizer()
 
-  def fit(self, x, y, t, alpha, epsilon):
+    self.t = t
+    self.learning_rate = learning_rate
+    self.epsilon = epsilon
+    # Define private variables
+    self.__bias = None
+    self.__error = np.inf
+
+  def fit(self, x, y):
     """
     Fits the model to x and y by updating the weight vector
     using gradient descent
@@ -103,6 +116,22 @@ class LogisticRegressionGradientDescent(object):
     alpha : learning rate
     epsilon : threshold for stopping condition
     """
+    self.__weights = np.zeros(x.shape[1])
+    self.__bias = np.zeros(1)
+    for i in range(self.t):
+      error_sum = 0
+      for j in range(x.shape[0]):
+        error_sum += self.__update(x[j], y[j])
+
+      error = error_sum / x.shape[0]
+
+      # loss > previous_loss - tol
+      if (np.abs(self.__error - error) < self.tol):
+        print("Converged at epcoh:", i + 1)
+        break
+
+      else:
+        self.__error = error
 
 
   def predict(self, x):
@@ -126,6 +155,11 @@ class LogisticRegressionGradientDescent(object):
 
     returns : double
     """
+    y_pred = self.predict(x)
+
+    scores = np.where(y == y_pred, 1, 0)
+    mean_accuracy = np.mean(scores)
+    return mean_accuracy
 
     return 0.0
 
@@ -177,8 +211,6 @@ class LinearRegressionGradientDescent(object):
     scores = np.where(y == y_pred, 1, 0)
     mean_accuracy = np.mean(scores)
     return mean_accuracy
-
-    #return 0.0
 
 def mean_squared_error(y_hat, y):
   """
