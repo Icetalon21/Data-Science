@@ -105,6 +105,13 @@ class LogisticRegressionGradientDescent(object):
     self.__bias = None
     self.__error = np.inf
 
+  def threshold_function(self, h):
+      _h = h.copy()
+      _h[_h > 0] = 1
+      _h[_h < 0] = 0
+
+      return _h
+
   def fit(self, x, y):
     """
     Fits the model to x and y by updating the weight vector
@@ -142,10 +149,11 @@ class LogisticRegressionGradientDescent(object):
 
     returns : N x 1 label vector
     """
+    h = np.dot(x, self.__weights) + self.__bias  # [a1, a2, a3] . [b1, b2, b3] = [a1*b1 + a2*b2 + a3*b3]
+    return self.threshold_function(h)
+    #return np.zeros(x.shape[0])
 
-    return np.zeros(x.shape[0])
-
-  def score(self, x, y):
+  def score(self, x, y): #correct
     """
     Predicts labels based on feature vector x and computes the mean accuracy
     of the predictions
@@ -167,12 +175,26 @@ class LogisticRegressionGradientDescent(object):
 Implementation of our Linear Regression model trained using Gradient Descent
 """
 class LinearRegressionGradientDescent(object):
-  def __init__(self):
+  def __init__(self, t=100, learning_rate=0.1, epsilon=1e-4):
     # Define private variables
     self.__weights = None
     self.__optimizer = GradientDescentOptimizer()
 
-  def fit(self, x, y, t, alpha, epsilon):
+    self.t = t
+    self.learning_rate = learning_rate
+    self.epsilon = epsilon
+    # Define private variables
+    self.__bias = None
+    self.__error = np.inf
+
+  def threshold_function(self, h):
+      _h = h.copy()
+      _h[_h > 0] = 1
+      _h[_h < 0] = 0
+
+      return _h
+
+  def fit(self, x, y):
     """
     Fits the model to x and y by updating the weight vector
     using gradient descent
@@ -183,7 +205,22 @@ class LinearRegressionGradientDescent(object):
     alpha : learning rate
     epsilon : threshold for stopping condition
     """
+    self.__weights = np.zeros(x.shape[1])
+    self.__bias = np.zeros(1)
+    for i in range(self.t):
+      error_sum = 0
+      for j in range(x.shape[0]):
+        error_sum += self.__update(x[j], y[j])
 
+      error = error_sum / x.shape[0]
+
+      # loss > previous_loss - tol
+      if (np.abs(self.__error - error) < self.tol):
+        print("Converged at epcoh:", i + 1)
+        break
+
+      else:
+        self.__error = error
 
   def predict(self, x):
     """
@@ -193,8 +230,9 @@ class LinearRegressionGradientDescent(object):
 
     returns : N x 1 label vector
     """
-
-    return np.zeros(x.shape[0])
+    h = np.dot(x, self.__weights) + self.__bias  # [a1, a2, a3] . [b1, b2, b3] = [a1*b1 + a2*b2 + a3*b3]
+    return self.threshold_function(h)
+    #return np.zeros(x.shape[0])
 
   def score(self, x, y):
     """
@@ -221,7 +259,8 @@ def mean_squared_error(y_hat, y):
 
     returns : double
     """
-  return np.mean((y_hat-y)**2)
+  return np.mean((y_hat-y)**2) #correct
+  #https://stackoverflow.com/questions/39064684/mean-squared-error-in-python/39065217
 
 if __name__ == '__main__':
 
