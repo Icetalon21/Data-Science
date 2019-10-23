@@ -100,7 +100,7 @@ Implementation of our Logistic Regression model for binary classification
 trained using Gradient Descent
 """
 class LogisticRegressionGradientDescent(object):
-  def __init__(self, t=100, learning_rate=0.1, epsilon=1e-4):
+  def __init__(self):
     """
     t : number of iterations to train
     alpha : learning rate
@@ -110,13 +110,6 @@ class LogisticRegressionGradientDescent(object):
     self.__weights = None
     self.__optimizer = GradientDescentOptimizer()
 
-    self.t = t
-    self.learning_rate = learning_rate
-    self.epsilon = epsilon
-    # Define private variables
-    self.__bias = None
-    self.__error = np.inf
-
   def threshold_function(self, h):
       _h = h.copy()
       _h[_h > 0] = 1
@@ -124,7 +117,7 @@ class LogisticRegressionGradientDescent(object):
 
       return _h
 
-  def fit(self, x, y):
+  def fit(self, x, y, t, alpha, epsilon):
     """
     Fits the model to x and y by updating the weight vector
     using gradient descent
@@ -135,9 +128,17 @@ class LogisticRegressionGradientDescent(object):
     alpha : learning rate
     epsilon : threshold for stopping condition
     """
+    self.t = t
+    self.alpha= alpha
+    self.epsilon = epsilon
+    # Define private variables
+    #self.__bias = None
+    self.__error = np.inf
+
+
     self.__weights = np.zeros(x.shape[1])
     self.__bias = np.zeros(1)
-    for i in range(self.t):
+    for i in range(int(t)): #changed from self.t
       error_sum = 0
       for j in range(x.shape[0]):
         error_sum += self.__update(x[j], y[j])
@@ -187,17 +188,10 @@ class LogisticRegressionGradientDescent(object):
 Implementation of our Linear Regression model trained using Gradient Descent
 """
 class LinearRegressionGradientDescent(object):
-  def __init__(self, t=100, learning_rate=0.1, epsilon=1e-4):
+  def __init__(self):
     # Define private variables
     self.__weights = None
     self.__optimizer = GradientDescentOptimizer()
-
-    self.t = t
-    self.learning_rate = learning_rate
-    self.epsilon = epsilon
-    # Define private variables
-    self.__bias = None
-    self.__error = np.inf
 
   def threshold_function(self, h):
       _h = h.copy()
@@ -206,7 +200,7 @@ class LinearRegressionGradientDescent(object):
 
       return _h
 
-  def fit(self, x, y):
+  def fit(self, x, y, t, alpha, epsilon):
     """
     Fits the model to x and y by updating the weight vector
     using gradient descent
@@ -217,9 +211,17 @@ class LinearRegressionGradientDescent(object):
     alpha : learning rate
     epsilon : threshold for stopping condition
     """
+    self.t = t
+    self.alpha = alpha
+    self.epsilon = epsilon
+    # Define private variables
+    #self.__bias = None
+    self.__error = np.inf
+
+
     self.__weights = np.zeros(x.shape[1])
     self.__bias = np.zeros(1)
-    for i in range(self.t):
+    for i in range(int(t)): #changed from self.t
       error_sum = 0
       for j in range(x.shape[0]):
         error_sum += self.__update(x[j], y[j])
