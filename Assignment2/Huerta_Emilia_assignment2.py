@@ -59,8 +59,18 @@ class GradientDescentOptimizer(object):
 
     returns 1 x d gradients
     """
+    bias = 0.5 * np.ones([x.shape[0], 1])
+
+    x = np.concatenate([bias, x], axis=-1)
+
     if loss_func == 'logistic':
-      return 0.0
+      gradients = np.zeros(x.shape)
+      for n in range(x.shape[0]):
+        x_n = n[n, ...]
+
+        h_x = np.dot(np.squeeze(w), x_n)
+        gradients[n,:] = (-y[n] * x_n) / (1.0 + np.exp(y[n] * h_x))
+        return np.mean(gradients, axis=0)
     elif loss_func == 'mean_squared':
       return 0.0
     elif loss_func == 'half_mean_squared':
@@ -80,7 +90,9 @@ class GradientDescentOptimizer(object):
 
     returns 1 x d weights
     """
+    #alpha * self.__comppute_gradients()
 
+    w = w - alpha * self.__compute_gradients(w, x, y, loss_func)
     return w
 
 """
@@ -215,7 +227,7 @@ class LinearRegressionGradientDescent(object):
       error = error_sum / x.shape[0]
 
       # loss > previous_loss - tol
-      if (np.abs(self.__error - error) < self.tol):
+      if (np.abs(self.__error - error) < self.epsilon):
         print("Converged at epcoh:", i + 1)
         break
 
