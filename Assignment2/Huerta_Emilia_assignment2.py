@@ -59,11 +59,23 @@ class GradientDescentOptimizer(object):
 
     returns 1 x d gradients
     """
-    bias = 0.5 * np.ones([x.shape[0], 1])
+    #bias = 0.5 * np.ones([x.shape[0], 1])
 
-    x = np.concatenate([bias, x], axis=-1)
+    #x = np.concatenate([bias, x], axis=-1)
+
+    # h = wx + b
+    h = np.dot(x, w.T)
 
     if loss_func == 'logistic':
+      p = 1 / (1 + np.exp(-h))
+
+      loss = y*np.log(p) + (1-y)*np.log(1-p)
+
+      grad = np.dot( (y - p).T, x)
+
+      return grad * np.mean(loss)
+
+      '''
       gradients = np.zeros(x.shape)
       for n in range(x.shape[0]):
         x_n = n[n, ...]
@@ -71,12 +83,51 @@ class GradientDescentOptimizer(object):
         h_x = np.dot(np.squeeze(w), x_n)
         gradients[n,:] = (-y[n] * x_n) / (1.0 + np.exp(y[n] * h_x))
         return np.mean(gradients, axis=0)
+      '''
+
     elif loss_func == 'mean_squared':
-      return 0.0
+      loss = np.mean( (y - h)**2 )
+      grad = 2 * np.dot((y - h).T, x) / len(x)
+
+      return grad * loss
+
+
     elif loss_func == 'half_mean_squared':
-      return 0.0
+      loss = np.mean((y - h) ** 2) / 2
+      grad = np.dot((y - h).T, x) / len(x)
+
+      return grad * loss
+
     else:
       raise ValueError('Supported losses: logistic, mean_squared, or half_mean_squared')
+
+
+    ''''
+    dL/dw = dL/dp * dp/dh * dh/dw
+    dL/db = dL/dp * dp/dh * dh/db
+    
+    dh/dw = x
+    dh/db = 1
+    
+    dL/dw = dL/dp * p(1-p) * x
+    dL/db = dL/dp * p(1-p) * 1
+    
+    logistic:
+    p = 1 / (1 + exp-pred)
+    L = y*log(p) + (1 - y)*log(1-p) => Cross entropy loss
+    
+    dL/dw = (y - p) / p*(1-p) * p(1-p) = (y - p) * x
+    
+    
+    Mean squared:
+    L = mean( (y - p)^2 )
+    dL = 2 * (-1)
+    
+    dL/dw = mean(L* (-2) * X)
+    
+    
+    '''
+
 
   def update(self, w, x, y, alpha, loss_func):
     """
@@ -91,6 +142,7 @@ class GradientDescentOptimizer(object):
     returns 1 x d weights
     """
     #alpha * self.__comppute_gradients()
+    #w -= lr * grad * error
 
     w = w - alpha * self.__compute_gradients(w, x, y, loss_func)
     return w
@@ -182,7 +234,7 @@ class LogisticRegressionGradientDescent(object):
     mean_accuracy = np.mean(scores)
     return mean_accuracy
 
-    return 0.0
+    #return 0.0
 
 """
 Implementation of our Linear Regression model trained using Gradient Descent
