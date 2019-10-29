@@ -71,7 +71,8 @@ class GradientDescentOptimizer(object):
 
       loss = y*np.log(p) + (1-y)*np.log(1-p)
 
-      grad = np.dot( (y - p).T, x)
+      #grad = np.dot((y - p).T, x)
+      grad = np.dot((y - p).T, x) / len(x)
 
       return grad * np.mean(loss)
 
