@@ -66,18 +66,26 @@ class GradientDescentOptimizer(object):
     gradients = np.zeros([x.shape[0], x.shape[1]])
 
     # h = wx + b
-    h = np.dot(x, w.T)
 
+    # h = np.dot(x, w.T)
+    #
+    # if loss_func == 'logistic':
+    #   p = 1 / (1 + np.exp(-h))
+    #
+    #   loss = y*np.log(p) + (1-y)*np.log(1-p)
+    #
+    #   #grad = np.dot((y - p).T, x)
+    #   grad = np.dot((y - p).T, x) / len(x)
+    #
+    #   return grad * np.mean(loss)
     if loss_func == 'logistic':
-      p = 1 / (1 + np.exp(-h))
+      gradients = np.zeros(x.shape)
+      for n in range(x.shape[0]):
+        x_n = x[n, ...]
 
-      loss = y*np.log(p) + (1-y)*np.log(1-p)
-
-      #grad = np.dot((y - p).T, x)
-      grad = np.dot((y - p).T, x) / len(x)
-
-      return grad * np.mean(loss)
-
+        h_x = np.dot(np.squeeze(w), x_n)
+        gradients[n, :] = (-y[n] * x_n) / (1.0 + np.exp(y[n] * h_x))
+        return np.mean(gradients, axis=0)
       '''
       gradients = np.zeros(x.shape)
       for n in range(x.shape[0]):
@@ -96,17 +104,17 @@ class GradientDescentOptimizer(object):
       for n in range (x.shape[0]):
         x_n = x[n, :]
         h_x_n = np.dot(np.squeeze(w), x_n) #wTxN
-        print("testing", h_x_n-y[n])
+        #print("testing", h_x_n-y[n])
         gradients[n] = (h_x_n - y[n]) * x_n
       #I will have N gradients
       return 2 * np.mean(gradients, axis=0)
 
 
-    elif loss_func == 'half_mean_squared':
-      loss = np.mean((y - h) ** 2) / 2
-      grad = np.dot((y - h).T, x) / len(x)
-
-      return grad * loss
+    # elif loss_func == 'half_mean_squared':
+    #   loss = np.mean((y - h) ** 2) / 2
+    #   grad = np.dot((y - h).T, x) / len(x)
+    #
+    #   return grad * loss
 
     else:
       raise ValueError('Supported losses: logistic, mean_squared, or half_mean_squared')
@@ -174,12 +182,12 @@ class LogisticRegressionGradientDescent(object):
     self.__weights = None
     self.__optimizer = GradientDescentOptimizer()
 
-  def threshold_function(self, h):
-      _h = h.copy()
-      _h[_h > 0] = 1
-      _h[_h < 0] = 0
-
-      return _h
+  # def threshold_function(self, h):
+  #     _h = h.copy()
+  #     _h[_h > 0] = 1
+  #     _h[_h < 0] = 0
+  #
+  #     return _h
 
   def fit(self, x, y, t, alpha, epsilon):
     """
@@ -192,12 +200,12 @@ class LogisticRegressionGradientDescent(object):
     alpha : learning rate
     epsilon : threshold for stopping condition
     """
-    self.t = t
-    self.alpha= alpha
-    self.epsilon = epsilon
-    # Define private variables
-    #self.__bias = None
-    self.__error = np.inf
+    # self.t = t
+    # self.alpha= alpha
+    # self.epsilon = epsilon
+    # # Define private variables
+    # #self.__bias = None
+    # self.__error = np.inf
 
 
     self.__weights = np.zeros(x.shape[1])
@@ -526,9 +534,9 @@ if __name__ == '__main__':
   alpha : learning rate
   epsilon : threshold for stopping condition
   '''
-  t_housing = 100.0
-  alpha_housing = 0.000001
-  epsilon_housing = 1e-4
+  t_housing = 100
+  alpha_housing = 1e-6
+  epsilon_housing = 1e-8
   our_linear_housing = LinearRegressionGradientDescent()
   our_linear_housing.fit(
       x_housing_train, y_housing_train, t_housing, alpha_housing, epsilon_housing)
