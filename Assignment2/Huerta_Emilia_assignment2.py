@@ -59,9 +59,11 @@ class GradientDescentOptimizer(object):
 
     returns 1 x d gradients
     """
-    #bias = 0.5 * np.ones([x.shape[0], 1])
-
-    #x = np.concatenate([bias, x], axis=-1)
+    # bias = 0.5 * np.ones([x.shape[0], 1])
+    #
+    # x = np.concatenate([bias, x], axis=-1)
+    x = np.concatenate([0.5 * np.ones(x.shape[0]), x], axis = -1)
+    gradients = np.zero (x.shape[0], x.shape[1])
 
     # h = wx + b
     h = np.dot(x, w.T)
@@ -79,7 +81,7 @@ class GradientDescentOptimizer(object):
       '''
       gradients = np.zeros(x.shape)
       for n in range(x.shape[0]):
-        x_n = n[n, ...]
+        x_n = n[n, :]
 
         h_x = np.dot(np.squeeze(w), x_n)
         gradients[n,:] = (-y[n] * x_n) / (1.0 + np.exp(y[n] * h_x))
@@ -87,10 +89,16 @@ class GradientDescentOptimizer(object):
       '''
 
     elif loss_func == 'mean_squared':
-      loss = np.mean( (y - h)**2 )
-      grad = 2 * np.dot((y - h).T, x) / len(x)
-
-      return grad * loss
+      # loss = np.mean((y - h)**2 )
+      # grad = 2 * np.dot((y - h).T, x) / len(x)
+      #
+      # return grad * loss
+      for n in range (x.shape[0]):
+        x_n = x[n,:]
+        h_x_n = np.dot(np.squeeze(self.__weights, x_n)) #wTxN
+        gradients[n] = (h_x_n) * x_n
+      #I will have N gradients
+      return 2 * np.mean(gradients, axis=0)
 
 
     elif loss_func == 'half_mean_squared':
@@ -130,7 +138,7 @@ class GradientDescentOptimizer(object):
     '''
 
 
-  def update(self, w, x, y, alpha, loss_func):
+  def update(self, w, x, y, alpha, loss_func):  #this is correct for sure
     """
     Updates the weight vector based on logistic, mean squared or half mean squared loss
 
@@ -144,6 +152,8 @@ class GradientDescentOptimizer(object):
     """
     #alpha * self.__comppute_gradients()
     #w -= lr * grad * error
+
+    #NEW WEIGHT = (OLD WIGHT - ALPHA) * GRADIENT
 
     w = w - alpha * self.__compute_gradients(w, x, y, loss_func)
     return w
@@ -264,41 +274,81 @@ class LinearRegressionGradientDescent(object):
     alpha : learning rate
     epsilon : threshold for stopping condition
     """
-    self.t = t
-    self.alpha = alpha
-    self.epsilon = epsilon
-    # Define private variables
-    #self.__bias = None
-    self.__error = np.inf
+    #gradient descent algorithm (basically)
+    #initialize the weights
+    #w=0, [N, d+1]
+
+    # self.t = t
+    # self.alpha = alpha
+    # self.epsilon = epsilon
+    # # Define private variables
+    # #self.__bias = None
+    # self.__error = np.inf
 
 
-    self.__weights = np.zeros(x.shape[1])
-    self.__bias = np.zeros(1)
-    for i in range(int(t)): #changed from self.t
-      error_sum = 0
-      for j in range(x.shape[0]):
-        error_sum += self.__update(x[j], y[j])
+    # self.__weights = np.zeros(x.shape[1])  #initializes the weights
+    #
+    # self.__bias = np.zeros(1)
+    # for i in range(int(t)): #changed from self.t
+    #   error_sum = 0
+    #   for j in range(x.shape[0]):
+    #     error_sum += self.__update(x[j], y[j])
+    #
+    #   error = error_sum / x.shape[0]
+    #
+    #   # loss > previous_loss - tol
+    #   if (np.abs(self.__error - error) < self.epsilon):
+    #     print("Converged at epcoh:", i + 1)
+    #     break
+    #
+    #   else:
+    #     self.__error = error
 
-      error = error_sum / x.shape[0]
 
-      # loss > previous_loss - tol
-      if (np.abs(self.__error - error) < self.epsilon):
-        print("Converged at epcoh:", i + 1)
+    self.__weights = np.zeros(x.shape[1] +1)
+    self.__weights[0] = -1.0
+    for i in range(t):
+      #predict N values
+      h_x = self.predict(x)
+      #compute the loss
+      loss = np.mean((h_x-y)**2)
+      w_i = self.__optimizer.update(self.__weights, x, y, alpha, loss_func='mean_squared')
+      if loss == 0:
         break
-
-      else:
-        self.__error = error
+      #loss is 0
+        #break
+      #Change in magnitude is small
+      # ||w**(t+1) - w**(t)|| < eplison
+      #the change in weights
+      d_w = self.__weights - w_i
+      mag_d_w = np.sqrt(np.sum(d_w**2))
+      #save the weights
+      self.__weights = w_i
+      if mag_d_w < epsilon:
+        break
 
   def predict(self, x):
     """
     Predicts the label for each feature vector x
-
+      w = self.weights
     x : N x d feature vector
 
     returns : N x 1 label vector
     """
-    h = np.dot(x, self.__weights) + self.__bias  # [a1, a2, a3] . [b1, b2, b3] = [a1*b1 + a2*b2 + a3*b3]
-    return self.threshold_function(h)
+    #Assume x has size [N, d]
+    # weight w " " [1, d + 1]
+    #h(x) = w1x1 + w2x2 + .... wdxd - threshold
+    x = np.concatenate([0.50*np.ones(x.shape[0]), x], axis = 1)
+    h_x = np.zeros(x.shape[0])
+    for n in range(x.shape[0]):
+      x_n = x[n,:] #single example of x
+      h_x[n] = np.dot(np.squeeze(self.__weights), np.squeeze(x))
+    #N predictions stored in h_x = wTx
+    return h_x
+
+    # h = np.dot(x, self.__weights) + self.__bias  # [a1, a2, a3] . [b1, b2, b3] = [a1*b1 + a2*b2 + a3*b3]
+    # return self.threshold_function(h)
+
     #return np.zeros(x.shape[0])
 
   def score(self, x, y):
@@ -311,11 +361,15 @@ class LinearRegressionGradientDescent(object):
 
     returns : double
     """
-    y_pred = self.predict(x)
-
-    scores = np.where(y == y_pred, 1, 0)
-    mean_accuracy = np.mean(scores)
-    return mean_accuracy
+    #make a prediction for all x
+    h_x = self.predict(x) #[N,]
+    mse = np.mean((h_x - y) **2)
+    return mse
+    # y_pred = self.predict(x)
+    #
+    # scores = np.where(y == y_pred, 1, 0)
+    # mean_accuracy = np.mean(scores)
+    # return mean_accuracy
 
 def mean_squared_error(y_hat, y):
   """
