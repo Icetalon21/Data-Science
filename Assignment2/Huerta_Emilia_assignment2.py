@@ -62,8 +62,8 @@ class GradientDescentOptimizer(object):
     # bias = 0.5 * np.ones([x.shape[0], 1])
     #
     # x = np.concatenate([bias, x], axis=-1)
-    x = np.concatenate([0.5 * np.ones(x.shape[0]), x], axis = -1)
-    gradients = np.zero (x.shape[0], x.shape[1])
+    x = np.concatenate([0.5 * np.ones([x.shape[0], 1]), x], axis=-1)
+    gradients = np.zeros([x.shape[0], x.shape[1]])
 
     # h = wx + b
     h = np.dot(x, w.T)
@@ -95,7 +95,7 @@ class GradientDescentOptimizer(object):
       # return grad * loss
       for n in range (x.shape[0]):
         x_n = x[n,:]
-        h_x_n = np.dot(np.squeeze(self.__weights, x_n)) #wTxN
+        h_x_n = np.dot(np.squeeze(w, x_n)) #wTxN
         gradients[n] = (h_x_n) * x_n
       #I will have N gradients
       return 2 * np.mean(gradients, axis=0)
@@ -307,7 +307,7 @@ class LinearRegressionGradientDescent(object):
 
     self.__weights = np.zeros(x.shape[1] +1)
     self.__weights[0] = -1.0
-    for i in range(t):
+    for i in range(int(t)):
       #predict N values
       h_x = self.predict(x)
       #compute the loss
@@ -338,11 +338,13 @@ class LinearRegressionGradientDescent(object):
     #Assume x has size [N, d]
     # weight w " " [1, d + 1]
     #h(x) = w1x1 + w2x2 + .... wdxd - threshold
-    x = np.concatenate([0.50*np.ones(x.shape[0]), x], axis = 1)
+    x = np.concatenate([0.50*np.ones([x.shape[0], 1]), x], axis=-1)
     h_x = np.zeros(x.shape[0])
     for n in range(x.shape[0]):
       x_n = x[n,:] #single example of x
-      h_x[n] = np.dot(np.squeeze(self.__weights), np.squeeze(x))
+      x_n = np.expand_dims(x_n, axis=-1)
+      #h_x[n] = np.dot(np.squeeze(self.__weights), np.squeeze(x))
+      h_x[n] = np.dot(np.squeeze(self.__weights), x_n)
     #N predictions stored in h_x = wTx
     return h_x
 
@@ -518,9 +520,14 @@ if __name__ == '__main__':
   Trains and tests our Linear Regression model trained using Gradient Descent
   """
   # Trains our Linear Regression model on Boston housing price data
-  t_housing = 0.0
-  alpha_housing = 0.0
-  epsilon_housing = 0.0
+  '''
+  t : number of iterations to train
+  alpha : learning rate
+  epsilon : threshold for stopping condition
+  '''
+  t_housing = 100.0
+  alpha_housing = 0.1
+  epsilon_housing = 1e-4
   our_linear_housing = LinearRegressionGradientDescent()
   our_linear_housing.fit(
       x_housing_train, y_housing_train, t_housing, alpha_housing, epsilon_housing)
