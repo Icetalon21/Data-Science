@@ -233,9 +233,17 @@ class LogisticRegressionGradientDescent(object):
 
     returns : N x 1 label vector
     """
-    h = np.dot(x, self.__weights) + self.__bias  # [a1, a2, a3] . [b1, b2, b3] = [a1*b1 + a2*b2 + a3*b3]
-    return self.threshold_function(h)
+    # h = np.dot(x, self.__weights) + self.__bias  # [a1, a2, a3] . [b1, b2, b3] = [a1*b1 + a2*b2 + a3*b3]
+    # return self.threshold_function(h)
     #return np.zeros(x.shape[0])
+    bias = 0.5 * np.ones([x.shape[0], 1])
+    x = np.concatenate([bias, x], axis=-1)
+    predictions = np.zeros(x.shape[0])
+    for n in range(x.shape[0]):
+      x_n = x[n, ...]
+      h_x = np.dot(np.squeeze(self.__weights.T), x_n)
+      predictions = np.where(predictions >= 0.5, 1.0, -1.0)
+      return predictions
 
   def score(self, x, y): #correct
     """
