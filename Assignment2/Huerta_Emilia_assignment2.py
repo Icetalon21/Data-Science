@@ -208,22 +208,21 @@ class LogisticRegressionGradientDescent(object):
     # self.__error = np.inf
 
 
-    self.__weights = np.zeros(x.shape[1])
-    self.__bias = np.zeros(1)
+    self.__weights = np.zeros([1, x.shape[1] + 1])
+    self.__weights[0] = -1
     for i in range(int(t)): #changed from self.t
-      error_sum = 0
-      for j in range(x.shape[0]):
-        error_sum += self.__update(x[j], y[j])
-
-      error = error_sum / x.shape[0]
-
-      # loss > previous_loss - tol
-      if (np.abs(self.__error - error) < self.tol):
-        print("Converged at epcoh:", i + 1)
+      h_x = self.predict(x)
+      h_x_mag = np.sqrt(np.sum(h_x**2))
+      loss = np.mean(np.log(1 + np.exp(-y * h_x)))
+      w_i = self.__optimizer.update(self.__weights, x, y, alpha, loss_func='logistic')
+      if loss == 0: #global minima
         break
-
-      else:
-        self.__error = error
+      d_w = self.__weights - w_i
+      d_w_mag = np.sqrt(np.sum(d_w**2))
+      mag = np.sqrt(np.sum(d_w**2))
+      self.__weights = w_i
+      if mag < epsilon:
+        break
 
 
   def predict(self, x):
