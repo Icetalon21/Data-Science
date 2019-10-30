@@ -94,9 +94,10 @@ class GradientDescentOptimizer(object):
       #
       # return grad * loss
       for n in range (x.shape[0]):
-        x_n = x[n,:]
-        h_x_n = np.dot(np.squeeze(w, x_n)) #wTxN
-        gradients[n] = (h_x_n) * x_n
+        x_n = x[n, :]
+        h_x_n = np.dot(np.squeeze(w), x_n) #wTxN
+        print("testing", h_x_n-y[n])
+        gradients[n] = (h_x_n - y[n]) * x_n
       #I will have N gradients
       return 2 * np.mean(gradients, axis=0)
 
@@ -526,7 +527,7 @@ if __name__ == '__main__':
   epsilon : threshold for stopping condition
   '''
   t_housing = 100.0
-  alpha_housing = 0.1
+  alpha_housing = 0.000001
   epsilon_housing = 1e-4
   our_linear_housing = LinearRegressionGradientDescent()
   our_linear_housing.fit(
