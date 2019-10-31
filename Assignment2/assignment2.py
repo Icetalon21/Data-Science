@@ -6,13 +6,19 @@ from sklearn.preprocessing import StandardScaler
 
 
 """
-Name: Doe, John (Please write names in <Last Name, First Name> format)
+Name: Huerta, Emilia (Please write names in <Last Name, First Name> format)
 
 Collaborators: Doe, Jane (Please write names in <Last Name, First Name> format)
 
 Collaboration details: Discussed <function name> implementation details with Jane Doe.
 
 Summary:
+
+I referenced 
+
+https://timvieira.github.io/blog/post/2014/02/11/exp-normalize-trick/  
+https://stackoverflow.com/questions/40726490/overflow-error-in-pythons-numpy-exp-function
+
 Report your scores here. For example,
 
 Results on Wisconsin breast cancer dataset using scikit-learn Logistic Regression model
@@ -28,17 +34,17 @@ Results on diabetes dataset using scikit-learn Linear Regression model
 Training set mean accuracy: 2991.9850
 Testing set mean accuracy: 1735.9381
 Results on Wisconsin breast cancer dataset using our Logistic Regression model
-Training set mean accuracy: 0.0000
-Testing set mean accuracy: 0.0000
+Training set mean accuracy: 0.9785
+Testing set mean accuracy: 0.9649
 Results on digits 7 and 9 dataset using our Logistic Regression model
-Training set mean accuracy: 0.0000
-Testing set mean accuracy: 0.0000
+Training set mean accuracy: 0.9969
+Testing set mean accuracy: 1.0000
 Results on Boston housing price dataset using our Linear Regression model
-Training set mean accuracy: 617.1287
-Testing set mean accuracy: 369.2698
+Training set mean accuracy: 23.2364
+Testing set mean accuracy: 10.5766
 Results on diabetes dataset using our Linear Regression model
-Training set mean accuracy: 29088.9673
-Testing set mean accuracy: 28946.6889
+Training set mean accuracy: 3000.3298
+Testing set mean accuracy: 1757.0450
 """
 
 
