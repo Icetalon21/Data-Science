@@ -209,13 +209,13 @@ class LogisticRegressionGradientDescent(object):
         self.__weights[0] = -1
         for i in range(int(t)):  # changed from self.t
             h_x = self.predict(x)
-            h_x_mag = np.sqrt(np.sum(h_x ** 2))
+            # h_x_mag = np.sqrt(np.sum(h_x ** 2))
             loss = np.mean(np.log(1 + np.exp(-y * h_x)))
             w_i = self.__optimizer.update(self.__weights, x, y, alpha, loss_func='logistic')
             if loss == 0:  # global minima
                 break
             d_w = self.__weights - w_i
-            d_w_mag = np.sqrt(np.sum(d_w ** 2))
+            # d_w_mag = np.sqrt(np.sum(d_w ** 2))
             mag = np.sqrt(np.sum(d_w ** 2))
             self.__weights = w_i
             if mag < epsilon:
@@ -237,8 +237,10 @@ class LogisticRegressionGradientDescent(object):
         for n in range(x.shape[0]):
             x_n = x[n, ...]
             h_x = np.dot(np.squeeze(self.__weights.T), x_n)
-            predictions = np.where(predictions >= 0.5, 1.0, -1.0)
-            return predictions
+            exp = np.exp(-1 * h_x)
+            predictions[n] = 1 / (1 + exp)
+        predictions = np.where(predictions >= 0.5, 1.0, -1.0)
+        return predictions
 
     def score(self, x, y):  # correct
         """
