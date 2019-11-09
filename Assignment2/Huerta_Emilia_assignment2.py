@@ -104,11 +104,16 @@ class GradientDescentOptimizer(object):
             return 2 * np.mean(gradients, axis=0)
 
 
-        # elif loss_func == 'half_mean_squared':
+        elif loss_func == 'half_mean_squared':
         #   loss = np.mean((y - h) ** 2) / 2
         #   grad = np.dot((y - h).T, x) / len(x)
         #
         #   return grad * loss
+            for n in range(x.shape[0]):
+                x_n = x[n, :]
+                h_x_n = np.dot(np.squeeze(w), x_n)
+                gradients[n] = (h_x_n - y[n]) * x_n
+            return np.mean(gradients, axis=0)
 
         else:
             raise ValueError('Supported losses: logistic, mean_squared, or half_mean_squared')
