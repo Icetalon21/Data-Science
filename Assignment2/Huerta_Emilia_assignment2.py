@@ -180,13 +180,6 @@ class LogisticRegressionGradientDescent(object):
         self.__weights = None
         self.__optimizer = GradientDescentOptimizer()
 
-    # def threshold_function(self, h):
-    #     _h = h.copy()
-    #     _h[_h > 0] = 1
-    #     _h[_h < 0] = 0
-    #
-    #     return _h
-
     def fit(self, x, y, t, alpha, epsilon):
         """
         Fits the model to x and y by updating the weight vector
@@ -258,9 +251,6 @@ class LogisticRegressionGradientDescent(object):
         mean_accuracy = np.mean(scores)
         return mean_accuracy
 
-        # return 0.0
-
-
 """
 Implementation of our Linear Regression model trained using Gradient Descent
 """
@@ -271,13 +261,6 @@ class LinearRegressionGradientDescent(object):
         # Define private variables
         self.__weights = None
         self.__optimizer = GradientDescentOptimizer()
-
-    # def threshold_function(self, h):
-    #     _h = h.copy()
-    #     _h[_h > 0] = 1
-    #     _h[_h < 0] = 0
-    #
-    #     return _h
 
     def fit(self, x, y, t, alpha, epsilon):
         """
@@ -318,7 +301,7 @@ class LinearRegressionGradientDescent(object):
         #   else:
         #     self.__error = error
 
-        self.__weights = np.zeros(x.shape[1] + 1)
+        self.__weights = np.zeros([1, x.shape[1] + 1]) #changed on 11/8
         self.__weights[0] = -1.0
         for i in range(int(t)):
             # predict N values
@@ -356,7 +339,9 @@ class LinearRegressionGradientDescent(object):
             x_n = x[n, :]  # single example of x
             x_n = np.expand_dims(x_n, axis=-1)
             # h_x[n] = np.dot(np.squeeze(self.__weights), np.squeeze(x))
-            h_x[n] = np.dot(np.squeeze(self.__weights), x_n)
+            # h_x[n] = np.dot(np.squeeze(self.__weights), x_n)
+            h_x_n = np.dot(np.squeeze(self.__weights), x_n) #added on 11/8
+            h_x[n] = h_x_n #this assigns values to the array of predictions
         # N predictions stored in h_x = wTx
         return h_x
 
