@@ -5,9 +5,9 @@ import matplotlib.pyplot as plt
 
 
 """
-Name: Doe, John (Please write names in <Last Name, First Name> format)
+Name: Huerta, Emilia (Please write names in <Last Name, First Name> format)
 
-Collaborators: Doe, Jane (Please write names in <Last Name, First Name> format)
+Collaborators: Kitamura, Masao (Please write names in <Last Name, First Name> format)
 
 Collaboration details: Discussed <function name> implementation details with Jane Doe.
 """
@@ -33,6 +33,11 @@ def get_eigenfaces(eigenvalues, eigenvectors, k):
 
     returns d x k vector
   """
+  #sort eigenvalues
+  #take order
+  #sort eigenvectors
+  #select from o to k
+  #eigenvectors
 
 def project(faces, faces_mean, eigenfaces):
   """
@@ -74,6 +79,8 @@ def synthesize(eigenfaces, variances, faces_mean, k=50, n=25):
 
     returns synthesized faces
   """
+  #sample from distribution of Z
+  np.random(0, np.sqrt(sigma))
 
 
 def mean_squared_error(x, x_hat):
@@ -134,7 +141,19 @@ def visualize_eigenfaces(eigenfaces):
     eigenfaces : d x k vector
   """
   fig = plt.figure()
-  fig.suptitle('Top 25 Eigenfaces')
+  for i in range(5 * 5): #25
+    ax = fig.add_subplot(5, 5, i + 1)
+    plt.imshow(faces[i, ...], cmap='gray')
+
+
+
+    # if i < n:
+    #   plt.imshow(faces[i, ...],cmap = 'gray')
+    # else:
+    #   plt.imshow(reconstructed_faces[i-n, ...], cmap='gray')
+
+
+  #fig.suptitle('Top 25 Eigenfaces')
 
 
 def visualize_synthetic_faces(faces):
@@ -144,6 +163,11 @@ def visualize_synthetic_faces(faces):
 
     eigenfaces : N x d vector
   """
+  #X = ZW^T + U
+  #Z = BW projects B to subspace
+  #W is eigenfaces which projects
+  #wT will project back to original space
+
   fig = plt.figure()
   fig.suptitle('Synthetic Faces')
 
