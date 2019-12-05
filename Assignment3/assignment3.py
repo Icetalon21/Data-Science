@@ -140,10 +140,19 @@ def visualize_eigenfaces(eigenfaces):
 
     eigenfaces : d x k vector
   """
+  #Slide 34 - Visualizing the data
+  #faces_train = np.reshape(faces_train, (-1, 78, 78))
   fig = plt.figure()
-  for i in range(5 * 5): #25
+  fig.suptitle('Top 25 Eigenfaces')
+  for i in range(0, 25):
     ax = fig.add_subplot(5, 5, i + 1)
-    plt.imshow(faces[i, ...], cmap='gray')
+    ax.imshow(faces_train[i, ...], cmap='gray')
+  plt.show()
+
+  # fig = plt.figure()
+  # for i in range(5 * 5): #25
+  #   ax = fig.add_subplot(5, 5, i + 1)
+  #   plt.imshow(faces[i, ...], cmap='gray')
 
 
 
@@ -227,23 +236,25 @@ if __name__ == '__main__':
   plt.xlabel('Ranking')
   plt.ylabel('Eigenvalues')
   plt.plot(top_values)
-  plt.show(block=True)  #takes too long
+  plt.show()  #takes too long
 
   print('Visualizing the top 25 eigenfaces')
   # TODO: visualize the top 25 eigenfaces
-  #Slide 34 - Visualizing the data
+  # #Slide 34 - Visualizing the data
   faces_train = np.reshape(faces_train, (-1, 78, 78))
   fig = plt.figure()
   fig.suptitle('Top 25 Eigenfaces')
   for i in range(0, 25):
     ax = fig.add_subplot(5, 5, i + 1)
-    ax.imshow(faces_train[i, ...])
+    ax.imshow(faces_train[i, ...], cmap='gray')
   plt.show()
+
   # fig = plt.figure()
   # for i in range(5 * 5): #25
   #   ax = fig.add_subplot(5, 5, i + 1)
   #   plt.imshow(faces[i, ...], cmap='gray')
 
+  #visualize_eigenfaces()
 
   print('Plotting training reconstruction error for various k')
   # TODO: plot the mean squared error of training set with
