@@ -164,7 +164,9 @@ def visualize_synthetic_faces(faces):
     eigenfaces : N x d vector
   """
   #X = ZW^T + U
-  #Z = BW projects B to subspace
+  #Z = BW projects B to subspace    -------this should give you the projection  np.matmal(B,W)
+            #B is training data minus the mean of your training set (centers your data)
+            #Passed in a B_train
   #W is eigenfaces which projects
   #wT will project back to original space
 
@@ -184,23 +186,64 @@ if __name__ == '__main__':
     faces.append(np.asarray(im))
   faces = np.asarray(faces) # (1000, 78, 78)
   # Normalize faces between 0 and 1
-  faces = faces/255.0
+  faces = faces/255.0   #faces is X
 
   print('Vectorizing faces into N x d matrix')
   # TODO: reshape the faces to into an N x d matrix
+  #Slide 26 - reshape the image into a vector
+  faces = np.reshape(faces, (-1, 6084))  # 78 * 78 = 6084
 
   print('Splitting dataset into {} for training and {} for testing'.format(N_TRAIN, faces.shape[0]-N_TRAIN))
   faces_train = faces[0:N_TRAIN, ...]
   faces_test = faces[N_TRAIN::, ...]
 
+  X_train = faces_train
+  X_test = faces_test
+
   print('Computing eigenfaces from training set')
   # TODO: obtain eigenfaces and eigenvalues
+  #Slide 28 - compute the mean ans center the data
+  mu_train = np.mean(faces_train, axis=0)
+  B_train = faces_train - mu_train
+
+  #Compute the covariance matrix
+  C = np.matmul(B_train.T, B_train) / (B_train.shape[0])
+
+  # Eigen decomposition
+  S, V = np.linalg.eig(C)
 
   print('Plotting the eigenvalues from largest to smallest')
   # TODO: plot the first 200 eigenvalues from largest to smallest
+  # Sort the values in descending order
+  #NOT SURE IF THIS WORKS
+  top_values = np.sort(S)
+  top_values = np.flip(top_values)
+
+  # Select the top 45 dimensions
+  #Slide #31
+  top_values = V[0:200]
+
+  plt.title("Top 200 Eigenvalues")
+  plt.xlabel('Ranking')
+  plt.ylabel('Eigenvalues')
+  plt.plot(top_values)
+  plt.show(block=True)  #takes too long
 
   print('Visualizing the top 25 eigenfaces')
   # TODO: visualize the top 25 eigenfaces
+  #Slide 34 - Visualizing the data
+  faces_train = np.reshape(faces_train, (-1, 78, 78))
+  fig = plt.figure()
+  fig.suptitle('Top 25 Eigenfaces')
+  for i in range(0, 25):
+    ax = fig.add_subplot(5, 5, i + 1)
+    ax.imshow(faces_train[i, ...])
+  plt.show()
+  # fig = plt.figure()
+  # for i in range(5 * 5): #25
+  #   ax = fig.add_subplot(5, 5, i + 1)
+  #   plt.imshow(faces[i, ...], cmap='gray')
+
 
   print('Plotting training reconstruction error for various k')
   # TODO: plot the mean squared error of training set with
