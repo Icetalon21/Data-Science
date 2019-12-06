@@ -92,6 +92,7 @@ def mean_squared_error(x, x_hat):
 
     returns mean squared error
   """
+  return np.mean((x - x_hat) ** 2) #correct
 
 
 def plot_eigenvalues(eigenvalues):
