@@ -34,9 +34,13 @@ def get_eigenfaces(eigenvalues, eigenvectors, k):
     returns d x k vector
   """
   #sort eigenvalues
+
   #take order
+
   #sort eigenvectors
+
   #select from o to k
+
   #eigenvectors
 
 def project(faces, faces_mean, eigenfaces):
@@ -52,6 +56,12 @@ def project(faces, faces_mean, eigenfaces):
 
     returns N x k vector
   """
+  #Slide #28 - Compute the mean & center the data (faces)
+  #B = x - mean of x
+  B = faces - faces_mean
+
+  #Multiply centered faces with eigenfaces
+  return np.matmul(B, eigenfaces)  #(B, W)
 
 def reconstruct(faces_projected, faces_mean, eigenfaces):
   """
