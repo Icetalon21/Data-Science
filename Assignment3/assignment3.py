@@ -9,7 +9,8 @@ Name: Huerta, Emilia (Please write names in <Last Name, First Name> format)
 
 Collaborators: Kitamura, Masao (Please write names in <Last Name, First Name> format)
 
-Collaboration details: Discussed <function name> implementation details with Jane Doe.
+Collaboration details:  Synthesize function
+                        Implementation of the error
 """
 
 CELEBA_DIRPATH = 'celebA_dataset'
@@ -34,14 +35,15 @@ def get_eigenfaces(eigenvalues, eigenvectors, k):
     returns d x k vector
   """
   #sort eigenvalues
-
+  order = np.argsort(-eigenvalues)
   #take order
-
+  values = eigenvalues[order]
   #sort eigenvectors
-
+  vectors = eigenvectors[:, order]
   #select from o to k
-
+  eigenfaces = vectors[:, 0:k].real
   #eigenvectors
+  return eigenfaces
 
 def project(faces, faces_mean, eigenfaces):
   """
@@ -319,22 +321,92 @@ if __name__ == '__main__':
 
   print('Plotting training reconstruction error for various k')
   # TODO: plot the mean squared error of training set with
-  k=[5, 10, 15, 20, 30, 40, 50, 75, 100, 125, 150, 200]
+  k_values=[5, 10, 15, 20, 30, 40, 50, 75, 100, 125, 150, 200]
+  #Got help from Masao
+  errors = []
+
+  for k in k_values:
+    W = V[:, 0:k]  # (6084, k)
+    #Slide #31 - Project our data
+    # Project B to Z
+    # Z_train = np.matmul(B_train, W)  # (850, k)
+    Z_train = project(faces_train, mu_train, W)  # (850, k)
+
+    # Recontruct Z to X_hat
+    # X_train_hat = np.matmul(Z_train, W.T) + mu_train  # (850, 6084)
+    X_train_hat = reconstruct(Z_train, mu_train, W)  # (850, 6084)
+
+    # Measure loss
+    mse = mean_squared_error(X_train, X_train_hat)
+
+    # Append to array
+    errors.append(mse)
+
+    plt.title("Mean Squared Error of training set with various K values")
+    plt.xlabel('K values')
+    plt.ylabel('MSE')
+    plt.plot(k_values, errors)
+    plt.show()  # Show MSE plot
 
   print('Reconstructing faces from projected faces in training set')
   # TODO: choose k and reconstruct training set
 
+  # Z is projected faces, and Z = BW
+  # W is eigenfaces with dimensions d x k
+  # B is centered faces (N x d) X (d x k) = N x k
+  # Therefore, Z has fewer dimensions
+  # Hence, B was projected to Z
+
+  k = 50
+  W = V[:, 0:k].real  # converts complex128 to float64 (needed for imshow to work later)
+  # Project B to Z (compress)
+  Z_train = np.matmul(B_train, W)  # (850, 50)
+  # Reconstruct (decompress)
+  X_train_hat = np.matmul(Z_train, W.T) + mu_train
+  X_train_hat = np.reshape(X_train_hat, (-1, 78, 78))
+  X_train_faces = np.reshape(X_train, (-1, 78, 78))
+
   # TODO: visualize the reconstructed faces from training set
+  visualize_reconstructions(X_train_faces, X_train_hat)
 
   print('Reconstructing faces from projected faces in testing set')
   # TODO: reconstruct faces from the projected faces
+  B_test = X_test - mu_train  # According to Slack chat with Dr. Wong
+  C = np.matmul(B_test.T, B_test) / (B_test.shape[0])
+  # Project B to Z (compress)
+  Z_test = np.matmul(B_test, W)  # (850, 50)
+  # Reconstruct (decompress)
+  X_test_hat = np.matmul(Z_test, W.T) + mu_train
+  X_test_hat = np.reshape(X_test_hat, (-1, 78, 78))
+  X_test_faces = np.reshape(X_test, (-1, 78, 78))
 
   # TODO: visualize the reconstructed faces from training set
+  visualize_reconstructions(X_test_faces, X_test_hat)
 
   print('Plotting testing reconstruction error for various k')
   # TODO: plot the mean squared error of testing set with
-  # k=[5, 10, 15, 20, 30, 40, 50, 75, 100, 125, 150, 200]
+  k=[5, 10, 15, 20, 30, 40, 50, 75, 100, 125, 150, 200]
+
+  mses = []
+  for k in k_values:
+    W = V[:, 0:k]  # (6084, k)
+
+    z_k = np.matmul(B_test, W)  # (150, k)
+
+    x_hat_k = np.matmul(z_k, W.T) + mu_train
+    mse = mean_squared_error(X_test, x_hat_k)
+    mses.append(mse)
+
+  plot_reconstruction_error(mses, k)
 
   print('Creating synethic faces')
   # TODO: synthesize and visualize new faces based on the distribution of the latent variables
   # you may choose another k that you find suitable
+
+  k = 50
+  eigenfaces = get_eigenfaces(S, V, k)
+  variances = S.real
+  faces_mean = mu_train
+  X_hat = synthesize(eigenfaces, variances, faces_mean)
+  X_hat = np.reshape(X_hat, (-1, 78, 78))
+  visualize_synthetic_faces(X_hat)
