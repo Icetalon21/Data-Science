@@ -180,6 +180,17 @@ def visualize_eigenfaces(eigenfaces):
   """
   #Slide 34 - Visualizing the data
   #faces_train = np.reshape(faces_train, (-1, 78, 78))
+
+  # fig = plt.figure()
+  # fig.suptitle('Top 25 Eigenfaces')
+  #
+  # k = 25
+  # for i in range(0, k):
+  #   ax = fig.add_subplot(5, 5, i + 1)
+  #   ax.imshow(eigenfaces[i, ...], cmap='gray')
+  #
+  # plt.show(block=True)
+
   fig = plt.figure()
   fig.suptitle('Top 25 Eigenfaces')
   for i in range(0, 25):
@@ -188,6 +199,7 @@ def visualize_eigenfaces(eigenfaces):
   plt.show()
 
   # fig = plt.figure()
+  #fig.suptitle('Top 25 Eigenfaces')
   # for i in range(5 * 5): #25
   #   ax = fig.add_subplot(5, 5, i + 1)
   #   plt.imshow(faces[i, ...], cmap='gray')
@@ -198,9 +210,6 @@ def visualize_eigenfaces(eigenfaces):
     #   plt.imshow(faces[i, ...],cmap = 'gray')
     # else:
     #   plt.imshow(reconstructed_faces[i-n, ...], cmap='gray')
-
-
-  #fig.suptitle('Top 25 Eigenfaces')
 
 
 def visualize_synthetic_faces(faces):
@@ -219,6 +228,10 @@ def visualize_synthetic_faces(faces):
 
   fig = plt.figure()
   fig.suptitle('Synthetic Faces')
+  for i in range(0, faces.shape[0]):
+    ax = fig.add_subplot(5, 5, i + 1)
+    ax.imshow(faces[i, ...], cmap='gray')
+  plt.show()
 
 
 if __name__ == '__main__':
