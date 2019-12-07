@@ -123,6 +123,8 @@ def plot_eigenvalues(eigenvalues):
   """
   fig = plt.figure()
   fig.suptitle('Eigenvalues Versus Principle Components')
+  plt.xlabel('Principle Components')
+  plt.ylabel('Eigenvalues')
   plt.plot(eigenvalues)
   plt.show()
 
@@ -397,7 +399,7 @@ if __name__ == '__main__':
     mse = mean_squared_error(X_test, x_hat_k)
     mses.append(mse)
 
-  plot_reconstruction_error(mses, k)
+  plot_reconstruction_error(mses, k_values)
 
   print('Creating synethic faces')
   # TODO: synthesize and visualize new faces based on the distribution of the latent variables
