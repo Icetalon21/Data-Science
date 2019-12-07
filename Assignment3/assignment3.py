@@ -92,8 +92,13 @@ def synthesize(eigenfaces, variances, faces_mean, k=50, n=25):
 
     returns synthesized faces
   """
+  #Example for Digits
   #sample from distribution of Z
-  np.random(0, np.sqrt(sigma))
+  #np.random(0, np.sqrt(sigma))
+  Z = np.random.normal(0, np.sqrt(variances[0:k]), (n, variances[0:k].shape[0]))
+  X_hat = np.matmul(Z, eigenfaces.T) + faces_mean
+  return X_hat
+
 
 
 def mean_squared_error(x, x_hat):
