@@ -183,22 +183,22 @@ def visualize_eigenfaces(eigenfaces):
   #Slide 34 - Visualizing the data
   #faces_train = np.reshape(faces_train, (-1, 78, 78))
 
-  # fig = plt.figure()
-  # fig.suptitle('Top 25 Eigenfaces')
-  #
-  # k = 25
-  # for i in range(0, k):
-  #   ax = fig.add_subplot(5, 5, i + 1)
-  #   ax.imshow(eigenfaces[i, ...], cmap='gray')
-  #
-  # plt.show(block=True)
-
   fig = plt.figure()
   fig.suptitle('Top 25 Eigenfaces')
-  for i in range(0, 25):
+
+  k = 25
+  for i in range(0, k):
     ax = fig.add_subplot(5, 5, i + 1)
-    ax.imshow(faces_train[i, ...], cmap='gray')
+    ax.imshow(eigenfaces[i, ...], cmap='gray')
+
   plt.show()
+
+  # fig = plt.figure()
+  # fig.suptitle('Top 25 Eigenfaces')
+  # for i in range(0, 25):
+  #   ax = fig.add_subplot(5, 5, i + 1)
+  #   ax.imshow(faces_train[i, ...], cmap='gray')
+  # plt.show()
 
   # fig = plt.figure()
   #fig.suptitle('Top 25 Eigenfaces')
@@ -342,11 +342,11 @@ if __name__ == '__main__':
     # Append to array
     errors.append(mse)
 
-    plt.title("Mean Squared Error of training set with various K values")
-    plt.xlabel('K values')
-    plt.ylabel('MSE')
-    plt.plot(k_values, errors)
-    plt.show()  # Show MSE plot
+  plt.title("Mean Squared Error of training set with various K values")
+  plt.xlabel('K values')
+  plt.ylabel('MSE')
+  plt.plot(k_values, errors)
+  plt.show()  # Show MSE plot
 
   print('Reconstructing faces from projected faces in training set')
   # TODO: choose k and reconstruct training set
@@ -385,7 +385,7 @@ if __name__ == '__main__':
 
   print('Plotting testing reconstruction error for various k')
   # TODO: plot the mean squared error of testing set with
-  k=[5, 10, 15, 20, 30, 40, 50, 75, 100, 125, 150, 200]
+  k_values=[5, 10, 15, 20, 30, 40, 50, 75, 100, 125, 150, 200]
 
   mses = []
   for k in k_values:
