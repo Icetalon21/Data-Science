@@ -286,7 +286,7 @@ if __name__ == '__main__':
 
   # top_values = V[0:200]
   k = 200
-  top_values = V[0:k]
+  top_values = S[0:k]
 
   plt.title("Top 200 Eigenvalues")
   plt.xlabel('Ranking')
