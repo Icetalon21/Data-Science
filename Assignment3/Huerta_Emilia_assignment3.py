@@ -40,7 +40,7 @@ def get_eigenfaces(eigenvalues, eigenvectors, k):
   values = eigenvalues[order]
   #sort eigenvectors
   vectors = eigenvectors[:, order]
-  #select from o to k
+  #select from 0 to k
   eigenfaces = vectors[:, 0:k].real
   #eigenvectors
   return eigenfaces
@@ -78,7 +78,7 @@ def reconstruct(faces_projected, faces_mean, eigenfaces):
 
     returns N x d vector
   """
-  #Slide #29 - Recover oour data
+  #Slide #29 - Recover our data
   #X_train_hat = np.matmul(Z_train, W.T) + mu_train
   return np.matmul(faces_projected, eigenfaces.T) + faces_mean
 
@@ -195,27 +195,6 @@ def visualize_eigenfaces(eigenfaces):
 
   plt.show()
 
-  # fig = plt.figure()
-  # fig.suptitle('Top 25 Eigenfaces')
-  # for i in range(0, 25):
-  #   ax = fig.add_subplot(5, 5, i + 1)
-  #   ax.imshow(faces_train[i, ...], cmap='gray')
-  # plt.show()
-
-  # fig = plt.figure()
-  #fig.suptitle('Top 25 Eigenfaces')
-  # for i in range(5 * 5): #25
-  #   ax = fig.add_subplot(5, 5, i + 1)
-  #   plt.imshow(faces[i, ...], cmap='gray')
-
-
-
-    # if i < n:
-    #   plt.imshow(faces[i, ...],cmap = 'gray')
-    # else:
-    #   plt.imshow(reconstructed_faces[i-n, ...], cmap='gray')
-
-
 def visualize_synthetic_faces(faces):
   """
     Creates a plot of 5 rows by 5 columns
@@ -300,19 +279,6 @@ if __name__ == '__main__':
   # TODO: visualize the top 25 eigenfaces
   # #Slide 34 - Visualizing the data
 
-  # faces_train = np.reshape(faces_train, (-1, 78, 78))
-  # fig = plt.figure()
-  # fig.suptitle('Top 25 Eigenfaces')
-  # for i in range(0, 25):
-  #   ax = fig.add_subplot(5, 5, i + 1)
-  #   ax.imshow(faces_train[i, ...], cmap='gray')
-  # plt.show()
-
-  # fig = plt.figure()
-  # for i in range(5 * 5): #25
-  #   ax = fig.add_subplot(5, 5, i + 1)
-  #   plt.imshow(faces[i, ...], cmap='gray')
-
   eigenfaces = get_eigenfaces(S, V, k)
 
   eigenfaces = eigenfaces.T
@@ -360,7 +326,7 @@ if __name__ == '__main__':
   # Hence, B was projected to Z
 
   k = 50
-  W = V[:, 0:k].real  # converts complex128 to float64 (needed for imshow to work later)
+  W = V[:, 0:k].real
   # Project B to Z (compress)
   Z_train = np.matmul(B_train, W)  # (850, 50)
   # Reconstruct (decompress)
@@ -373,7 +339,7 @@ if __name__ == '__main__':
 
   print('Reconstructing faces from projected faces in testing set')
   # TODO: reconstruct faces from the projected faces
-  B_test = X_test - mu_train  # According to Slack chat with Dr. Wong
+  B_test = X_test - mu_train
   C = np.matmul(B_test.T, B_test) / (B_test.shape[0])
   # Project B to Z (compress)
   Z_test = np.matmul(B_test, W)  # (850, 50)
