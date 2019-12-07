@@ -281,7 +281,10 @@ if __name__ == '__main__':
 
   # Select the top 45 dimensions
   #Slide #31
-  top_values = V[0:200]
+
+  # top_values = V[0:200]
+  k = 200
+  top_values = V[0:k]
 
   plt.title("Top 200 Eigenvalues")
   plt.xlabel('Ranking')
@@ -292,24 +295,31 @@ if __name__ == '__main__':
   print('Visualizing the top 25 eigenfaces')
   # TODO: visualize the top 25 eigenfaces
   # #Slide 34 - Visualizing the data
-  faces_train = np.reshape(faces_train, (-1, 78, 78))
-  fig = plt.figure()
-  fig.suptitle('Top 25 Eigenfaces')
-  for i in range(0, 25):
-    ax = fig.add_subplot(5, 5, i + 1)
-    ax.imshow(faces_train[i, ...], cmap='gray')
-  plt.show()
+
+  # faces_train = np.reshape(faces_train, (-1, 78, 78))
+  # fig = plt.figure()
+  # fig.suptitle('Top 25 Eigenfaces')
+  # for i in range(0, 25):
+  #   ax = fig.add_subplot(5, 5, i + 1)
+  #   ax.imshow(faces_train[i, ...], cmap='gray')
+  # plt.show()
 
   # fig = plt.figure()
   # for i in range(5 * 5): #25
   #   ax = fig.add_subplot(5, 5, i + 1)
   #   plt.imshow(faces[i, ...], cmap='gray')
 
-  #visualize_eigenfaces()
+  eigenfaces = get_eigenfaces(S, V, k)
+
+  eigenfaces = eigenfaces.T
+
+  eigenfaces = np.reshape(eigenfaces, (-1, 78, 78))
+
+  visualize_eigenfaces(eigenfaces)
 
   print('Plotting training reconstruction error for various k')
   # TODO: plot the mean squared error of training set with
-  # k=[5, 10, 15, 20, 30, 40, 50, 75, 100, 125, 150, 200]
+  k=[5, 10, 15, 20, 30, 40, 50, 75, 100, 125, 150, 200]
 
   print('Reconstructing faces from projected faces in training set')
   # TODO: choose k and reconstruct training set
