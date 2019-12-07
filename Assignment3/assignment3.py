@@ -61,7 +61,7 @@ def project(faces, faces_mean, eigenfaces):
   B = faces - faces_mean
 
   #Multiply centered faces with eigenfaces
-  return np.matmul(B, eigenfaces)  #(B, W)
+  return np.matmul(B, eigenfaces)  #(B_train, W)
 
 def reconstruct(faces_projected, faces_mean, eigenfaces):
   """
@@ -76,6 +76,9 @@ def reconstruct(faces_projected, faces_mean, eigenfaces):
 
     returns N x d vector
   """
+  #Slide #29 - Recover oour data
+  #X_train_hat = np.matmul(Z_train, W.T) + mu_train
+  return np.matmul(faces_projected, eigenfaces.T) + faces_mean
 
 def synthesize(eigenfaces, variances, faces_mean, k=50, n=25):
   """
