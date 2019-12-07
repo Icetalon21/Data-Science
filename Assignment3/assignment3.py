@@ -121,6 +121,8 @@ def plot_eigenvalues(eigenvalues):
   """
   fig = plt.figure()
   fig.suptitle('Eigenvalues Versus Principle Components')
+  plt.plot(eigenvalues)
+  plt.show()
 
 
 def visualize_reconstructions(faces, faces_hat, n=4):
@@ -137,6 +139,19 @@ def visualize_reconstructions(faces, faces_hat, n=4):
   fig = plt.figure()
   fig.suptitle('Real Versus Reconstructed Faces')
 
+  # fig = plt.figure()
+  # fig.suptitle('Real Versus Reconstructed Faces: ' + label)
+
+  #Slide #34 - Visualzing the data
+  for i in range(0, n * 2):
+    ax = fig.add_subplot(2, n, i + 1)
+    if i < n:
+      ax.imshow(faces[i, ...], cmap='gray')
+    else:
+      ax.imshow(faces_hat[i - n, ...], cmap='gray')
+
+  plt.show()
+
 
 def plot_reconstruction_error(mses, k):
   """
@@ -149,6 +164,10 @@ def plot_reconstruction_error(mses, k):
   """
   fig = plt.figure()
   fig.suptitle('Reconstruction Error')
+  plt.xlabel('K values')
+  plt.ylabel('MSE')
+  plt.plot(k, mses)
+  plt.show()
 
 
 def visualize_eigenfaces(eigenfaces):
