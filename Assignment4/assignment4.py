@@ -17,8 +17,8 @@ pip install tensorflow-gpu==1.14
 """
 
 
-n_batch = 32    # Size of each batch
-n_epoch = 40    # Number of times to go through training data
+n_batch = 5    # Size of each batch - started with 32
+n_epoch = 70    # Number of times to go through training data - started with 70
 
 digits = skdata.load_digits()
 
