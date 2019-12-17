@@ -83,7 +83,7 @@ with tf.Graph().as_default():
   # Transform (Project), reduce, predict (these what the layers represent)
 
   # Relu has linear activation, for easier gradients that means faster convergence
-  # With Sigmoid, you can bound your predictions to 0 and 1
+  # With Sigmoid, you can binf your predictions between 0 and 1
   # With Hyperbolic Tangent, you can bound between -1 and 1
   # With Leaky Relu, you can have negative prediction
   fc1 = tf.contrib.layers.fully_connected(x_input,
